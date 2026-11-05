@@ -12,11 +12,8 @@ export async function fetchStockData(data: StockFormData) {
 }
 
 export async function getStockList(): Promise<Stock[]>{
-    return [
-        {ticker: "AAPL", name: "Apple Inc."},
-        {ticker: "MSFT", name: "Microsoft Corporation"},
-        {ticker: "GOOG", name: "Alphabet Inc."},
-        {ticker: "AMZN", name: "Amazon.com, Inc."},
-        {ticker: "TSLA", name: "Tesla, Inc."},
-    ];
+    const data = await fetch('http://localhost:4000/stocks');
+    const stocks = await data.json();
+    console.log("stocks: ", stocks);
+    return stocks.data as Stock[];     
 }

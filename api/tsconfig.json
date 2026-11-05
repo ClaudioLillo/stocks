@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    /* Soporte de Lenguaje y Entorno */
+    "target": "ES2022",                          /* Versión de JavaScript de salida (compatible con Node.js moderno) */
+    "module": "NodeNext",                        /* Estrategia de módulos moderna para Node.js */
+    "moduleResolution": "NodeNext",              /* Resolución de módulos compatible con NodeNext */
+    
+    /* Emitir Archivos */
+    "outDir": "./dist",                          /* Carpeta donde se guardará el JavaScript compilado */
+    "rootDir": "./src",                          /* Carpeta raíz de tus archivos TypeScript (.ts) */
+    "removeComments": true,                      /* Elimina los comentarios al compilar */
+    "noEmitOnError": true,                       /* No compila si hay errores de TypeScript */
+
+    /* Comprobaciones de Tipo Críticas */
+    "strict": true,                              /* Activa todas las comprobaciones estrictas de tipo */
+    "noImplicitAny": true,                       /* Error si un tipo es 'any' de forma implícita */
+    "strictNullChecks": true,                    /* Mayor control sobre valores 'null' y 'undefined' */
+    
+    /* Interoperabilidad y Ajustes del Sistema */
+    "esModuleInterop": true,                     /* Permite importar módulos CommonJS como Express de forma estándar */
+    "forceConsistentCasingInFileNames": true,   /* Asegura que las mayúsculas/minúsculas coincidan en los imports */
+    "skipLibCheck": true                         /* Salta la comprobación de tipos de las librerías en node_modules */
+  },
+  "include": ["src/**/*"],                       /* Compila todo lo que esté dentro de la carpeta src */
+  "exclude": ["node_modules", "dist"]            /* Ignora dependencias y la carpeta de salida */
+}
