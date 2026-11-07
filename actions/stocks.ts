@@ -1,19 +1,76 @@
-'use server' // 👈 Esto le dice a Next.js que esta función SOLO se ejecuta en el servidor
 
-import { StockFormData } from '@/components/ui/StockForm';
+'use server';
+
+import fs from 'fs';
+import path from 'path';
+import os from 'os';
 import { Stock } from '@/types/stocks';
 
-export async function fetchStockData(data: StockFormData) {
-  // Aquí puedes llamar a tu API financiera usando tus API keys privadas de forma segura
-  console.log("Buscando en el servidor:", data.ticker, data.startDate, data.endDate);
-  
-  // const res = await fetch(`https://finanzas.com{data.ticker}...`);
-  // return await res.json();
+export interface SavedFile {
+  fileName: string;
+  symbol: string;
+  createdAt: string;
 }
 
-export async function getStockList(): Promise<Stock[]>{
-    const data = await fetch('http://localhost:4000/stocks');
-    const stocks = await data.json();
-    console.log("stocks: ", stocks);
-    return stocks.data as Stock[];     
-}
+export async function saveStockDataAction(symbol: string, stocks: Stock[]) {
+  try {
+    const tempDir = os.tmpdir();
+    const subDir = path.join(tempDir, 'stocks');
+
+    if (!fs.existsSync(subDir)) {
+      fs.mkdirSync(subDir, { recursive: true });
+    }
+    const fileName = `${symbol}.json`;
+    const filePath = path.join(subDir, fileName);
+
+
+    fs.writeFileSync(filePath, JSON.stringify(stocks, null, 2), 'utf-8');
+
+    console.log(`Archivo guardado exitosamente en: ${filePath}`);
+
+    return { 
+      success: true, 
+      message: `Guardado en servidor: ${fileName}`, 
+      savedPath: filePath,
+      data: stocks, 
+    };
+
+  } catch (error: any) {
+    console.error('Error en saveStockDataAction:', error);
+    return { success: false, error: error.message || 'Error desconocido' };
+  }
+};
+
+export async function getSavedStocksAction(): Promise<{ success: boolean; files?: SavedFile[]; error?: string }> {
+  try {
+    const tempDir = os.tmpdir();
+    const subDir = path.join(tempDir, 'stocks');
+    
+    if (!fs.existsSync(subDir)) {
+      return { success: true, files: [] };
+    }
+
+    const files = fs.readdirSync(subDir);
+
+    const stockFiles: SavedFile[] = files
+      .filter((file) => file.endsWith('.json'))
+      .map((file) => {
+        const filePath = path.join(subDir, file);
+        const stats = fs.statSync(filePath);
+        
+        const symbol = file.replace('.json', ''); 
+
+        return {
+          fileName: file,
+          symbol: symbol,
+          createdAt: stats.mtime.toISOString(),
+        };
+      })
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    return { success: true, files: stockFiles };
+  } catch (error: any) {
+    console.error('Error leyendo directorio de acciones:', error);
+    return { success: false, error: error.message || 'Error al leer los archivos' };
+  }
+};

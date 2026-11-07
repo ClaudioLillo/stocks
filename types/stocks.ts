@@ -1,4 +1,9 @@
 export type Stock = {
-    ticker: string;
-    name: string;
+  symbol: string;
+  date: string;
+  high: number;
+  low: number;
+  open: number;
+  close: number;
+  volume: number;
 };
